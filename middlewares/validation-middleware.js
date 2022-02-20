@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { ContactError } = require("../helpers/errors");
+const { ContactError, UserError } = require("../helpers/errors");
 
 const contactBodySchema = Joi.object({
   name: Joi.string()
@@ -14,6 +14,11 @@ const contactBodySchema = Joi.object({
   favorite: Joi.boolean(),
 });
 
+const userBodySchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
 const addContactBodyValidation = (req, res, next) => {
   const { error } = contactBodySchema.validate(req.body);
   if (error) {
@@ -22,6 +27,16 @@ const addContactBodyValidation = (req, res, next) => {
   }
   next();
 };
+
+const addUserBodyValidation = (req, res, next) => {
+  const { error } = userBodySchema.validate(req.body);
+  if (error) {
+    const { message } = error;
+    throw new UserError({ type: UserError.TYPE.VALIDATION, message });
+  }
+  next();
+};
 module.exports = {
   addContactBodyValidation,
+  addUserBodyValidation,
 };
