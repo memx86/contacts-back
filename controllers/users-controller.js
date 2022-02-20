@@ -1,23 +1,54 @@
 const gravatar = require("gravatar");
-
+const { nanoid } = require("nanoid");
+require("dotenv").config();
 const {
   signupUser,
+  verifyUser,
+  reVerifyUser,
   loginUser,
   logoutUser,
   refreshUser,
   patchFavoriteUser,
   patchAvatar,
 } = require("../services/users-service");
+const { sendVerificationEmail } = require("../services/email-service");
 const { handleAvatarFile } = require("../services/avatars-service");
+
+const getVerificationUrl = (verificationToken) => {
+  const HOMEPAGE = process.env.HOMEPAGE;
+  const PORT = process.env.PORT;
+  return `${HOMEPAGE}:${PORT}/api/users/verify/${verificationToken}`;
+};
 
 const signupUserController = async (req, res, next) => {
   const { body } = req;
   const avatar = gravatar.url(body.email, {
     protocol: "https",
   });
+  const verificationToken = nanoid();
   body.avatarURL = avatar;
+  body.verificationToken = verificationToken;
+
   const { email, subscription, avatarURL } = await signupUser(body);
+
+  const link = getVerificationUrl(verificationToken);
+  await sendVerificationEmail(email, link);
+
   res.status(201).json({ email, subscription, avatarURL });
+};
+
+const verifyUserController = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const response = await verifyUser(verificationToken);
+  res.json(response);
+};
+
+const reVerifyUserController = async (req, res, next) => {
+  const { email } = req.body;
+  const { verificationToken } = await reVerifyUser(email);
+  const link = getVerificationUrl(verificationToken);
+  await sendVerificationEmail(email, link);
+  res.json({ message: "Verification email sent" });
 };
 
 const loginUserController = async (req, res, next) => {
@@ -54,6 +85,8 @@ const patchAvatarController = async (req, res, next) => {
 
 module.exports = {
   signupUserController,
+  verifyUserController,
+  reVerifyUserController,
   loginUserController,
   logoutUserController,
   refreshUserController,

@@ -9,6 +9,8 @@ const {
   refreshUserController,
   patchFavoriteUserController,
   patchAvatarController,
+  verifyUserController,
+  reVerifyUserController,
 } = require("../../controllers/users-controller");
 const { auth } = require("../../middlewares/authorization");
 const {
@@ -26,6 +28,13 @@ router.post(
   addUserBodyValidation,
   errorHandlerWrapper(loginUserController)
 );
+
+router.get(
+  "/verify/:verificationToken",
+  errorHandlerWrapper(verifyUserController)
+);
+
+router.post("/verify", errorHandlerWrapper(reVerifyUserController));
 
 router.use(errorHandlerWrapper(auth));
 

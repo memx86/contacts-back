@@ -18,10 +18,30 @@ const signupUser = async (body) => {
   return newUser;
 };
 
+const verifyCheck = async (user) => {
+  if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
+  if (user.verify) throw new UserError({ type: UserError.TYPE.VERIFICATION });
+};
+
+const verifyUser = async (verificationToken) => {
+  const user = await User.findOne({ verificationToken });
+  await verifyCheck(user);
+  user.verificationToken = "none";
+  user.verify = true;
+  await user.save();
+  return { message: "verification successful" };
+};
+
+const reVerifyUser = async (email) => {
+  const user = await User.findOne({ email });
+  await verifyCheck(user);
+  return user;
+};
+
 const loginUser = async ({ email, password }) => {
   let user = await User.findOne({ email });
   if (!user) throw new UserError({ type: UserError.TYPE.AUTH });
-
+  if (!user.verify) throw new UserError({ type: UserError.TYPE.NOT_VERIFIED });
   const isAuth = await bcrypt.compare(password, user.password);
   if (!isAuth) throw new UserError({ type: UserError.TYPE.AUTH });
 
@@ -41,13 +61,11 @@ const checkUserToken = async (userId) => {
 };
 
 const logoutUser = async (userId) => {
-  // await checkUserToken(userId);
   const user = await User.findByIdAndUpdate(userId, { token: null });
   return user;
 };
 
 const refreshUser = async (userId) => {
-  // await checkUserToken(userId);
   const user = User.findById(userId).select(includingProjection);
   return user;
 };
@@ -79,6 +97,8 @@ const patchAvatar = async (userId, avatarURL) => {
 
 module.exports = {
   signupUser,
+  verifyUser,
+  reVerifyUser,
   loginUser,
   logoutUser,
   refreshUser,
