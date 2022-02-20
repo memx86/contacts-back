@@ -1,21 +1,29 @@
+const gravatar = require("gravatar");
+
 const {
   signupUser,
   loginUser,
   logoutUser,
   refreshUser,
   patchFavoriteUser,
-} = require("../db/services/users-service");
+  patchAvatar,
+} = require("../services/users-service");
+const { handleAvatarFile } = require("../services/avatars-service");
 
 const signupUserController = async (req, res, next) => {
   const { body } = req;
-  const { email, subscription } = await signupUser(body);
-  res.status(201).json({ email, subscription });
+  const avatar = gravatar.url(body.email, {
+    protocol: "https",
+  });
+  body.avatarURL = avatar;
+  const { email, subscription, avatarURL } = await signupUser(body);
+  res.status(201).json({ email, subscription, avatarURL });
 };
 
 const loginUserController = async (req, res, next) => {
   const { body } = req;
-  const { email, subscription, token } = await loginUser(body);
-  res.json({ token, user: { email, subscription } });
+  const { email, subscription, avatarURL, token } = await loginUser(body);
+  res.json({ token, user: { email, subscription, avatarURL } });
 };
 
 const logoutUserController = async (req, res, next) => {
@@ -26,18 +34,22 @@ const logoutUserController = async (req, res, next) => {
 
 const refreshUserController = async (req, res, next) => {
   const { userId } = req;
-  const { email, subscription } = await refreshUser(userId);
-  res.json({ email, subscription });
+  const user = await refreshUser(userId);
+  res.json(user);
 };
 
 const patchFavoriteUserController = async (req, res, next) => {
   const { userId, body } = req;
   const { subscription: newSubscription } = body;
-  const { email, subscription } = await patchFavoriteUser(
-    userId,
-    newSubscription
-  );
-  res.json({ email, subscription });
+  const user = await patchFavoriteUser(userId, newSubscription);
+  res.json(user);
+};
+
+const patchAvatarController = async (req, res, next) => {
+  const { userId, file } = req;
+  const newAvatar = await handleAvatarFile(file);
+  const user = await patchAvatar(userId, newAvatar);
+  res.json(user);
 };
 
 module.exports = {
@@ -46,4 +58,5 @@ module.exports = {
   logoutUserController,
   refreshUserController,
   patchFavoriteUserController,
+  patchAvatarController,
 };

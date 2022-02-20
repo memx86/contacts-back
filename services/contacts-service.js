@@ -1,5 +1,5 @@
-const { Contact } = require("../models/contactsModel");
-const { ContactError } = require("../../helpers/errors");
+const { Contact } = require("../db/models/contactsModel");
+const { ContactError } = require("../helpers/errors");
 
 const excludingProjection = { __v: 0, owner: 0 };
 

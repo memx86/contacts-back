@@ -5,7 +5,7 @@ const {
   removeContact,
   updateContact,
   updateStatusContact,
-} = require("../db/services/contacts-service");
+} = require("../services/contacts-service");
 
 // maybe better use this?
 // const contactResponseMaker = ({ _doc }) => {

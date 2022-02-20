@@ -26,7 +26,17 @@ UserError.TYPE = {
   TOKEN_TYPE: "Wrong token type",
 };
 
+class MulterError extends Error {
+  constructor({ type, message }) {
+    super(message ?? type);
+    this.type = type;
+  }
+}
+MulterError.TYPE = {
+  NO_FILE: "no file",
+};
 module.exports = {
   ContactError,
   UserError,
+  MulterError,
 };
