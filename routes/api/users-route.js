@@ -7,7 +7,7 @@ const {
   loginUserController,
   logoutUserController,
   refreshUserController,
-  patchFavoriteUserController,
+  patchSubscriptionController,
   patchAvatarController,
   verifyUserController,
   reVerifyUserController,
@@ -42,7 +42,7 @@ router.get("/logout", errorHandlerWrapper(logoutUserController));
 
 router.get("/current", errorHandlerWrapper(refreshUserController));
 
-router.patch("/", errorHandlerWrapper(patchFavoriteUserController));
+router.patch("/", errorHandlerWrapper(patchSubscriptionController));
 
 router.patch(
   "/avatars",

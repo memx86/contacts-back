@@ -39,7 +39,7 @@ const reVerifyUser = async (email) => {
 };
 
 const loginUser = async ({ email, password }) => {
-  let user = await User.findOne({ email });
+  const user = await User.findOne({ email });
   if (!user) throw new UserError({ type: UserError.TYPE.AUTH });
   if (!user.verify) throw new UserError({ type: UserError.TYPE.NOT_VERIFIED });
   const isAuth = await bcrypt.compare(password, user.password);
@@ -47,8 +47,8 @@ const loginUser = async ({ email, password }) => {
 
   const userId = user._id;
   const token = jwt.sign({ userId }, process.env.JWT_KEY);
-  await User.findByIdAndUpdate(userId, { token });
-  user = await User.findById(userId);
+  user.token = token;
+  await user.save();
   return user;
 };
 
@@ -70,7 +70,7 @@ const refreshUser = async (userId) => {
   return user;
 };
 
-const patchFavoriteUser = async (userId, subscription) => {
+const patchSubscription = async (userId, subscription) => {
   try {
     await User.findByIdAndUpdate(
       userId,
@@ -80,11 +80,6 @@ const patchFavoriteUser = async (userId, subscription) => {
   } catch ({ message }) {
     throw new UserError({ type: UserError.TYPE.VALIDATION, message });
   }
-  await User.findByIdAndUpdate(
-    userId,
-    { subscription },
-    { runValidators: true }
-  );
   const user = await User.findById(userId).select(includingProjection);
   return user;
 };
@@ -103,6 +98,6 @@ module.exports = {
   logoutUser,
   refreshUser,
   checkUserToken,
-  patchFavoriteUser,
+  patchSubscription,
   patchAvatar,
 };

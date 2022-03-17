@@ -8,7 +8,7 @@ const {
   loginUser,
   logoutUser,
   refreshUser,
-  patchFavoriteUser,
+  patchSubscription,
   patchAvatar,
 } = require("../services/users-service");
 const { sendVerificationEmail } = require("../services/email-service");
@@ -69,10 +69,10 @@ const refreshUserController = async (req, res, next) => {
   res.json(user);
 };
 
-const patchFavoriteUserController = async (req, res, next) => {
+const patchSubscriptionController = async (req, res, next) => {
   const { userId, body } = req;
   const { subscription: newSubscription } = body;
-  const user = await patchFavoriteUser(userId, newSubscription);
+  const user = await patchSubscription(userId, newSubscription);
   res.json(user);
 };
 
@@ -90,6 +90,6 @@ module.exports = {
   loginUserController,
   logoutUserController,
   refreshUserController,
-  patchFavoriteUserController,
+  patchSubscriptionController,
   patchAvatarController,
 };
