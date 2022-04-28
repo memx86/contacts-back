@@ -32,9 +32,12 @@ const verifyUser = async (verificationToken) => {
   return { message: "verification successful" };
 };
 
-const reVerifyUser = async (email) => {
+const reVerifyUser = async (email, verificationToken) => {
   const user = await User.findOne({ email });
-  await verifyCheck(user);
+  if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
+  user.verificationToken = verificationToken;
+  user.verify = false;
+  await user.save();
   return user;
 };
 
