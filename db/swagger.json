@@ -1,0 +1,733 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Contacts API",
+    "description": "Contacts API developed by memx86",
+    "contact": {
+      "email": "memx86@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "https://memx86-contacts.herokuapp.com/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operations available for users"
+    },
+    {
+      "name": "contacts",
+      "description": "Operations available for contacts"
+    }
+  ],
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "create user",
+        "description": "Create new user\n",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "User to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "400": {
+            "description": "validation error"
+          },
+          "409": {
+            "description": "Email in use"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "log in",
+        "description": "Log in user\n",
+        "operationId": "loginUser",
+        "requestBody": {
+          "description": "user object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in"
+          },
+          "400": {
+            "description": "Email or password is wrong, Please verify your email"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/verify/{verificationToken}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "verify user",
+        "description": "Provide verification token to get activation link via email\n",
+        "operationId": "verifyUser",
+        "parameters": [
+          {
+            "name": "verificationToken",
+            "in": "path",
+            "description": "user's verification token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "verification successful"
+          },
+          "400": {
+            "description": "Verification has already been passed"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/verify": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "reverify user",
+        "description": "Provide  email to resend verification link\n",
+        "operationId": "reVerifyUser",
+        "requestBody": {
+          "description": "user's email to reverify",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Verify"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification email sent"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "log user out",
+        "description": "Logout user\n",
+        "operationId": "logoutUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successfull logout"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "current user info",
+        "description": "Get current user information\n",
+        "operationId": "currentUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "current user"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "change user's subscription",
+        "description": "Change user's subscription field\n",
+        "operationId": "changeUserSubscription",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated subscription field",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Subscription"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "update successfull"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/avatars": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "upload an avatar",
+        "description": "Change user's avatar\n",
+        "operationId": "changeUserAvatar",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "image/*": {
+              "schema": {
+                "type": "string",
+                "format": "binar"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "update successfull"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contacts": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "get all user's contacts",
+        "description": "By passing in the appropriate bearer token, you can get all user's contacts\n",
+        "operationId": "getContacts",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "found contacts"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "adds contact",
+        "description": "Creates new contact",
+        "operationId": "addContact",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Contact to add",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Contact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "contact created"
+          },
+          "400": {
+            "description": "invalid input or validation failed"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contacts/{contactId}": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "get contact by id",
+        "description": "Get user's contact by id\n",
+        "operationId": "getContactById",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "contact's id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "found contact"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "update contact by id",
+        "description": "Updates a contact by id",
+        "operationId": "updateContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "contact's id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated contact",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Contact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "contact updated"
+          },
+          "400": {
+            "description": "invalid input or validation failed"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "delete contact by id",
+        "description": "Deletes a contact by id",
+        "operationId": "deleteContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "contact's id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "contact deleted"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contacts/{contactId}/favorite": {
+      "patch": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "update favorite field",
+        "description": "Updates contact's favorite field by id",
+        "operationId": "updateFavorite",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "contact's id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "user's bearer token",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated contact's favorite field",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Favorite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "contact's favorite field updated"
+          },
+          "400": {
+            "description": "missing field favorite"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          },
+          "subscription": {
+            "type": "string",
+            "example": "starter"
+          },
+          "avatarURL": {
+            "type": "string",
+            "example": "https://s.gravatar.com/avatar/e1102c33ff44561b951fc9fde8350062"
+          }
+        }
+      },
+      "Contact": {
+        "required": [
+          "email",
+          "name",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "phone": {
+            "type": "string",
+            "format": "phone",
+            "example": "+38(050)111-11-11"
+          },
+          "favorite": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "LogIn": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        }
+      },
+      "Verify": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          }
+        }
+      },
+      "Subscription": {
+        "required": [
+          "subscription"
+        ],
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "type": "string",
+            "example": "pro"
+          }
+        }
+      },
+      "Favorite": {
+        "required": [
+          "favorite"
+        ],
+        "type": "object",
+        "properties": {
+          "favorite": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}
