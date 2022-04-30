@@ -50,6 +50,7 @@ async function addContact(userId, body) {
   // await Contact.findById(contact._id).populate("owner"); ????
 
   const { _id: contactId } = await Contact.create({ ...body, owner: userId });
+  // new Contact(); contact.save(); return contact ? id?
   const contact = await getContactById(userId, contactId);
   return contact;
 }

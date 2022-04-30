@@ -29,7 +29,7 @@ const verifyUser = async (verificationToken) => {
   user.verificationToken = "none";
   user.verify = true;
   await user.save();
-  return { message: "verification successful" };
+  return { message: "Verification successful" };
 };
 
 const reVerifyUser = async (email, verificationToken) => {

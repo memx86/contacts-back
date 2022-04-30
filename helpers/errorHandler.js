@@ -1,4 +1,9 @@
-const { ContactError, UserError, MulterError } = require("./errors");
+const {
+  ContactError,
+  UserError,
+  MulterError,
+  ImageError,
+} = require("./errors");
 
 const errorHandlerWrapper = (controller) => {
   return (req, res, next) => {
@@ -19,6 +24,8 @@ const errorHandler = (error, req, res, next) => {
     case ContactError.TYPE.VALIDATION:
     case UserError.TYPE.VALIDATION:
     case MulterError.TYPE.NO_FILE:
+    case ImageError.TYPE.NOT_IMAGE:
+    case UserError.TYPE.TOKEN_TYPE:
     case UserError.TYPE.VERIFICATION:
     case UserError.TYPE.NOT_VERIFIED:
       return res.status(400).json({ message });

@@ -10,7 +10,7 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "1.0.1"
+    "version": "1.0.2"
   },
   "servers": [
     {
@@ -41,17 +41,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/User"
+                "$ref": "#/components/schemas/NewUser"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User created"
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           },
           "400": {
-            "description": "validation error"
+            "description": "Validation error"
           },
           "409": {
             "description": "Email in use"
@@ -82,10 +89,17 @@
         },
         "responses": {
           "200": {
-            "description": "User logged in"
+            "description": "User logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Email or password is wrong, Please verify your email"
+            "description": "Validation error | Email or password is wrong | Please verify your email"
           },
           "500": {
             "description": "Server error"
@@ -116,7 +130,7 @@
         ],
         "responses": {
           "200": {
-            "description": "verification successful"
+            "description": "Verification successful"
           },
           "400": {
             "description": "Verification has already been passed"
@@ -169,22 +183,12 @@
         "summary": "log user out",
         "description": "Logout user\n",
         "operationId": "logoutUser",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "204": {
             "description": "successfull logout"
+          },
+          "400": {
+            "description": "Wrong token type"
           },
           "401": {
             "description": "Not authorized"
@@ -192,7 +196,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/users/current": {
@@ -203,22 +212,19 @@
         "summary": "current user info",
         "description": "Get current user information\n",
         "operationId": "currentUser",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "current user"
+            "description": "current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong token type"
           },
           "401": {
             "description": "Not authorized"
@@ -226,7 +232,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/users/": {
@@ -237,19 +248,6 @@
         "summary": "change user's subscription",
         "description": "Change user's subscription field\n",
         "operationId": "changeUserSubscription",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "description": "Updated subscription field",
           "content": {
@@ -262,10 +260,17 @@
         },
         "responses": {
           "200": {
-            "description": "update successfull"
+            "description": "update successfull",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Validation error"
+            "description": "Wrong token type | Validation error"
           },
           "401": {
             "description": "Not authorized"
@@ -273,7 +278,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/users/avatars": {
@@ -284,19 +294,6 @@
         "summary": "upload an avatar",
         "description": "Change user's avatar\n",
         "operationId": "changeUserAvatar",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "image/*": {
@@ -309,7 +306,17 @@
         },
         "responses": {
           "200": {
-            "description": "update successfull"
+            "description": "update successfull",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong token type | no file | not image"
           },
           "401": {
             "description": "Not authorized"
@@ -317,7 +324,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/contacts": {
@@ -326,24 +338,56 @@
           "contacts"
         ],
         "summary": "get all user's contacts",
-        "description": "By passing in the appropriate bearer token, you can get all user's contacts\n",
+        "description": "Get all user's contacts\n",
         "operationId": "getContacts",
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
+            "name": "page",
+            "in": "query",
+            "description": "Page number, default: 1",
+            "required": false,
+            "style": "form",
+            "explode": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Per page value form 20 to 50, default: 20",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "favorite",
+            "in": "query",
+            "description": "get favorite/not favorite contacts",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "found contacts"
+            "description": "found contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contacts"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong token type"
           },
           "401": {
             "description": "Not authorized"
@@ -354,7 +398,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -363,35 +412,29 @@
         "summary": "adds contact",
         "description": "Creates new contact",
         "operationId": "addContact",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "description": "Contact to add",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Contact"
+                "$ref": "#/components/schemas/NewContact"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "contact created"
+            "description": "contact created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
           },
           "400": {
-            "description": "invalid input or validation failed"
+            "description": "Wrong token type | Missing required fields | Validation error"
           },
           "401": {
             "description": "Not authorized"
@@ -399,7 +442,12 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/contacts/{contactId}": {
@@ -421,33 +469,37 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
           "200": {
-            "description": "found contact"
+            "description": "found contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong token type"
           },
           "401": {
             "description": "Not authorized"
           },
           "404": {
-            "description": "Not found"
+            "description": "Contact not found"
           },
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -467,17 +519,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "requestBody": {
@@ -485,28 +526,40 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Contact"
+                "$ref": "#/components/schemas/NewUpdatedContact"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "contact updated"
+            "description": "contact updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
           },
           "400": {
-            "description": "invalid input or validation failed"
+            "description": "Wrong token type | Missing fields | Validation error"
           },
           "401": {
             "description": "Not authorized"
           },
           "404": {
-            "description": "Not found"
+            "description": "Contact not found"
           },
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -526,33 +579,30 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
           "200": {
-            "description": "contact deleted"
+            "description": "contact deleted id# {contactId}"
+          },
+          "400": {
+            "description": "Wrong token type"
           },
           "401": {
             "description": "Not authorized"
           },
           "404": {
-            "description": "Not found"
+            "description": "Contact not found"
           },
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/contacts/{contactId}/favorite": {
@@ -574,17 +624,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "user's bearer token",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "requestBody": {
@@ -599,27 +638,39 @@
         },
         "responses": {
           "200": {
-            "description": "contact's favorite field updated"
+            "description": "contact's favorite field updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
           },
           "400": {
-            "description": "missing field favorite"
+            "description": "Wrong token type | Missing required field favorite | Validation error"
           },
           "401": {
             "description": "Not authorized"
           },
           "404": {
-            "description": "Not found"
+            "description": "Contact not found"
           },
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
-      "User": {
+      "NewUser": {
         "required": [
           "email",
           "password"
@@ -645,7 +696,25 @@
           }
         }
       },
-      "Contact": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "subscription": {
+            "type": "string",
+            "example": "starter"
+          },
+          "avatarURL": {
+            "type": "string",
+            "example": "https://s.gravatar.com/avatar/e1102c33ff44561b951fc9fde8350062"
+          }
+        }
+      },
+      "NewContact": {
         "required": [
           "email",
           "name",
@@ -670,6 +739,76 @@
           "favorite": {
             "type": "boolean",
             "example": false
+          }
+        }
+      },
+      "NewUpdatedContact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "phone": {
+            "type": "string",
+            "format": "phone",
+            "example": "+38(050)111-11-11"
+          },
+          "favorite": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "620bd7c554c7112a78fd5bd3"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@mail.com"
+          },
+          "phone": {
+            "type": "string",
+            "format": "phone",
+            "example": "+38(050)111-11-11"
+          },
+          "favorite": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "Contacts": {
+        "type": "object",
+        "properties": {
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "total_results": {
+            "type": "integer"
           }
         }
       },
@@ -727,6 +866,72 @@
             "example": true
           }
         }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "JWT token"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      }
+    },
+    "responses": {
+      "NotFoundError": {
+        "description": "Not found"
+      },
+      "ContactNotFoundError": {
+        "description": "Contact not found"
+      },
+      "MissingError": {
+        "description": "Missing fields"
+      },
+      "MissingReqError": {
+        "description": "Missing required fields"
+      },
+      "MissingReqFavError": {
+        "description": "Missing required field favorite"
+      },
+      "ValidationError": {
+        "description": "Validation error"
+      },
+      "RegistrationError": {
+        "description": "Email in use"
+      },
+      "AuthError": {
+        "description": "Email or password is wrong"
+      },
+      "UnauthorizedError": {
+        "description": "Not authorized"
+      },
+      "TokenTypeError": {
+        "description": "Wrong token type"
+      },
+      "UserNotFoundError": {
+        "description": "User not found"
+      },
+      "EmailError": {
+        "description": "Can't send email"
+      },
+      "NotVerifiedError": {
+        "description": "Please verify your email"
+      },
+      "VerificationError": {
+        "description": "Verification has already been passed"
+      },
+      "ServerError": {
+        "description": "Server error"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
