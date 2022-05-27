@@ -26,7 +26,11 @@ const updateContactSchema = Joi.object({
 const addContactBodyValidation = (req, res, next) => {
   const { error } = contactBodySchema.validate(req.body);
   if (error) {
-    const { message } = error;
+    const { message, details } = error;
+    const type = details[0].type;
+    if (type === "any.required") {
+      throw new ContactError({ type: ContactError.TYPE.MISSING_REQ });
+    }
     throw new ContactError({ type: ContactError.TYPE.VALIDATION, message });
   }
   next();

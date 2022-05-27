@@ -53,7 +53,8 @@ async function addContact(body) {
 }
 
 async function updateContact(contactId, body) {
-  if (!body) throw new ContactError({ type: ContactError.TYPE.MISSING });
+  if (!Object.keys(body).length)
+    throw new ContactError({ type: ContactError.TYPE.MISSING });
 
   const contacts = await getContacts();
   const index = contacts.findIndex((contact) => contact.id === contactId);
