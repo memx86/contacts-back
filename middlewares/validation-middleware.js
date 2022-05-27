@@ -11,7 +11,16 @@ const contactBodySchema = Joi.object({
     .min(10)
     .pattern(/^[+]?[(]?[0-9]{3}?[)(]?[-\s]?[0-9]{2,3}?[)]?[-\s]?[0-9]{4,7}$/im)
     .required(),
-  favorite: Joi.boolean(),
+});
+
+const updateContactSchema = Joi.object({
+  name: Joi.string()
+    .min(3)
+    .pattern(/^[a-z\s]+$/i),
+  email: Joi.string().email(),
+  phone: Joi.string()
+    .min(10)
+    .pattern(/^[+]?[(]?[0-9]{3}?[)(]?[-\s]?[0-9]{2,3}?[)]?[-\s]?[0-9]{4,7}$/im),
 });
 
 const addContactBodyValidation = (req, res, next) => {
@@ -22,6 +31,17 @@ const addContactBodyValidation = (req, res, next) => {
   }
   next();
 };
+
+const updateContactValidation = (req, res, next) => {
+  const { error } = updateContactSchema.validate(req.body);
+  if (error) {
+    const { message } = error;
+    throw new ContactError({ type: ContactError.TYPE.VALIDATION, message });
+  }
+  next();
+};
+
 module.exports = {
   addContactBodyValidation,
+  updateContactValidation,
 };
