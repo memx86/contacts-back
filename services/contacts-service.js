@@ -40,11 +40,10 @@ async function removeContact(contactId) {
 }
 
 async function addContact(body) {
-  const { name, email, phone } = body;
   const contacts = await getContacts();
 
   const id = nanoid();
-  const newContact = { id, name, email, phone };
+  const newContact = { id, ...body };
 
   const newContacts = [...contacts, newContact];
   await writeContacts(newContacts);
