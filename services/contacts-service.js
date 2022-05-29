@@ -1,14 +1,9 @@
-const { Contact } = require("./contactsModel");
+const { Contact } = require("../db/models/contactsModel");
 const { ContactError } = require("../helpers/errors");
 
 async function getContacts() {
   const contacts = await Contact.find({});
   return contacts;
-}
-
-async function listContacts() {
-  const contacts = await getContacts();
-  console.table(contacts);
 }
 
 async function getContactById(contactId) {
@@ -19,39 +14,43 @@ async function getContactById(contactId) {
 }
 
 async function removeContact(contactId) {
-  const contact = await Contact.findByIdAndDelete(contactId);
-  if (!contact)
+  try {
+    const contact = await Contact.findByIdAndDelete(contactId);
+    return contact;
+  } catch (error) {
     throw new ContactError({ type: ContactError.TYPE.CONTACT_NOT_FOUND });
-  return contactId;
+  }
 }
 
 async function addContact(body) {
-  const { name, email, phone } = body;
-  if (!name || !email || !phone)
-    throw new ContactError({
-      type: ContactError.TYPE.MISSING_REQ,
-    });
   const contact = await Contact.create(body);
   return contact;
 }
 
 async function updateContact(contactId, body) {
-  if (!body) throw new ContactError({ type: ContactError.TYPE.MISSING });
-  await Contact.findByIdAndUpdate(contactId, body);
-  const contact = await getContactById(contactId);
-  return contact;
+  if (!Object.keys(body).length)
+    throw new ContactError({ type: ContactError.TYPE.MISSING });
+  try {
+    const contact = await Contact.findByIdAndUpdate(contactId, body, {
+      returnDocument: "after",
+    });
+    return contact;
+  } catch (error) {
+    throw new ContactError({ type: ContactError.TYPE.CONTACT_NOT_FOUND });
+  }
 }
 
 async function updateStatusContact(contactId, { favorite }) {
-  if (favorite === undefined)
+  if (typeof favorite !== "boolean")
     throw new ContactError({ type: ContactError.TYPE.MISSING_FAV });
-  await Contact.findByIdAndUpdate(contactId, { favorite });
   const contact = await getContactById(contactId);
+  contact.favorite = favorite;
+  await contact.save();
   return contact;
 }
+
 module.exports = {
   getContacts,
-  listContacts,
   getContactById,
   removeContact,
   addContact,

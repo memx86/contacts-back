@@ -9,6 +9,7 @@ const {
 } = require("../../controllers/contacts-controller");
 const {
   addContactBodyValidation,
+  updateContactValidation,
 } = require("../../middlewares/validation-middleware");
 const { errorHandlerWrapper } = require("../../helpers/errorHandler");
 
@@ -28,7 +29,7 @@ router.delete("/:contactId", errorHandlerWrapper(removeContactController));
 
 router.put(
   "/:contactId",
-  addContactBodyValidation,
+  updateContactValidation,
   errorHandlerWrapper(updateContactController)
 );
 

@@ -1,6 +1,6 @@
 const app = require("./app");
 require("dotenv").config();
-const { connectContacts } = require("./models/connectDb");
+const { connectContacts } = require("./db/connectDb");
 const PORT = process.env.PORT || 3000;
 
 const start = async () => {
