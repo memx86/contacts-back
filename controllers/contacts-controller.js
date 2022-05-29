@@ -25,8 +25,8 @@ const addContactController = async (req, res, next) => {
 
 const removeContactController = async (req, res, next) => {
   const id = req.params.contactId;
-  const contactId = await removeContact(id);
-  res.json({ message: `contact deleted id#${contactId}` });
+  const contact = await removeContact(id);
+  res.json(contact);
 };
 
 const updateContactController = async (req, res, next) => {

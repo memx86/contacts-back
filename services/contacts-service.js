@@ -27,16 +27,18 @@ async function getContactById(contactId) {
 
 async function removeContact(contactId) {
   const contacts = await getContacts();
-  const deletedContact = contacts.find((contact) => contact.id === contactId);
+  const deletedContactIdx = contacts.findIndex(
+    (contact) => contact.id === contactId
+  );
 
-  if (!deletedContact) {
+  if (deletedContactIdx === -1) {
     throw new ContactError({ type: ContactError.TYPE.CONTACT_NOT_FOUND });
   }
 
-  const newContacts = contacts.filter((contact) => contact.id !== contactId);
-  await writeContacts(newContacts);
+  const [deletedContact] = contacts.splice(deletedContactIdx, 1);
+  await writeContacts(contacts);
 
-  return contactId;
+  return deletedContact;
 }
 
 async function addContact(body) {
