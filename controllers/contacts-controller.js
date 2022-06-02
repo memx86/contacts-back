@@ -39,6 +39,7 @@ const getContactsController = async (req, res, next) => {
   const totalContacts = contacts.length;
   res.json({ contacts, page, limit, total_results: totalContacts });
 };
+
 const getContactByIdController = async (req, res, next) => {
   const { userId } = req;
   const id = req.params.contactId;
@@ -47,18 +48,20 @@ const getContactByIdController = async (req, res, next) => {
   // res.json(contactResponseMaker(contact));
   res.json(contact);
 };
+
 const addContactController = async (req, res, next) => {
   const { body, userId } = req;
   const newContact = await addContact(userId, body);
   // res.status(201).json(contactResponseMaker(newContact));
   res.status(201).json(newContact);
 };
+
 const removeContactController = async (req, res, next) => {
-  const { userId } = req;
   const id = req.params.contactId;
-  const contactId = await removeContact(userId, id);
-  res.json({ message: `contact deleted id#${contactId}` });
+  const contact = await removeContact(id);
+  res.json(contact);
 };
+
 const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { body, userId } = req;
@@ -66,6 +69,7 @@ const updateContactController = async (req, res, next) => {
   // res.json(contactResponseMaker(newContact));
   res.json(newContact);
 };
+
 const updateStatusContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { body, userId } = req;
@@ -73,6 +77,7 @@ const updateStatusContactController = async (req, res, next) => {
   // res.json(contactResponseMaker(newContact));
   res.json(newContact);
 };
+
 module.exports = {
   getContactsController,
   getContactByIdController,
