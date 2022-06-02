@@ -11,6 +11,7 @@ const contactBodySchema = Joi.object({
     .min(10)
     .pattern(/^[+]?[(]?[0-9]{3}?[)(]?[-\s]?[0-9]{2,3}?[)]?[-\s]?[0-9]{4,7}$/im)
     .required(),
+  favorite: Joi.boolean(),
 });
 
 const updateContactSchema = Joi.object({
@@ -21,6 +22,7 @@ const updateContactSchema = Joi.object({
   phone: Joi.string()
     .min(10)
     .pattern(/^[+]?[(]?[0-9]{3}?[)(]?[-\s]?[0-9]{2,3}?[)]?[-\s]?[0-9]{4,7}$/im),
+  favorite: Joi.boolean(),
 });
 
 const addContactBodyValidation = (req, res, next) => {

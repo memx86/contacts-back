@@ -5,6 +5,7 @@ const {
   addContactController,
   removeContactController,
   updateContactController,
+  updateStatusContactController,
 } = require("../../controllers/contacts-controller");
 const {
   addContactBodyValidation,
@@ -30,6 +31,11 @@ router.put(
   "/:contactId",
   updateContactValidation,
   errorHandlerWrapper(updateContactController)
+);
+
+router.patch(
+  "/:contactId/favorite",
+  errorHandlerWrapper(updateStatusContactController)
 );
 
 module.exports = router;

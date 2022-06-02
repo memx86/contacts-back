@@ -9,6 +9,7 @@ ContactError.TYPE = {
   CONTACT_NOT_FOUND: "Contact not found",
   MISSING: "Missing fields",
   MISSING_REQ: "Missing required fields",
+  MISSING_FAV: "Missing required field favorite",
   VALIDATION: "Validation error",
 };
 
