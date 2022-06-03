@@ -64,7 +64,6 @@ async function removeContact(userId, contactId) {
 
 async function updateContact(userId, contactId, body) {
   await getContactById(userId, contactId);
-  if (!body) throw new ContactError({ type: ContactError.TYPE.MISSING });
   await Contact.findByIdAndUpdate(contactId, body);
   const contact = await getContactById(userId, contactId);
   return contact;
