@@ -10,18 +10,18 @@ const {
 } = require("../../controllers/users-controller");
 const { auth } = require("../../middlewares/authorization");
 const {
-  addUserBodyValidation,
+  userBodyValidation,
 } = require("../../middlewares/validation-middleware");
 
 router.post(
   "/signup",
-  addUserBodyValidation,
+  userBodyValidation,
   errorHandlerWrapper(signupUserController)
 );
 
 router.post(
   "/login",
-  addUserBodyValidation,
+  userBodyValidation,
   errorHandlerWrapper(loginUserController)
 );
 

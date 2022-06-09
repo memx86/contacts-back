@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { UserError } = require("../helpers/errors");
-const { checkUserToken } = require("../db/services/users-service");
+const { checkUserToken } = require("../services/users-service");
 
 const auth = async (req, res, next) => {
   if (!req.headers.authorization)

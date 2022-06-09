@@ -5,7 +5,7 @@ const {
   removeContact,
   updateContact,
   updateStatusContact,
-} = require("../db/services/contacts-service");
+} = require("../services/contacts-service");
 
 const checkNan = (value) => {
   return !isNaN(value) ? value : 0;
@@ -48,8 +48,9 @@ const addContactController = async (req, res, next) => {
 };
 
 const removeContactController = async (req, res, next) => {
+  const { userId } = req;
   const id = req.params.contactId;
-  const contact = await removeContact(id);
+  const contact = await removeContact(userId, id);
   res.json(contact);
 };
 

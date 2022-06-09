@@ -4,7 +4,7 @@ const {
   logoutUser,
   refreshUser,
   patchFavoriteUser,
-} = require("../db/services/users-service");
+} = require("../services/users-service");
 
 const signupUserController = async (req, res, next) => {
   const { body } = req;
