@@ -2,7 +2,6 @@ const {
   signupUser,
   loginUser,
   logoutUser,
-  refreshUser,
   patchFavoriteUser,
 } = require("../services/users-service");
 
@@ -21,23 +20,20 @@ const loginUserController = async (req, res, next) => {
 const logoutUserController = async (req, res, next) => {
   const { userId } = req;
   await logoutUser(userId);
-  res.status(204).json({});
+  res.status(204);
 };
 
 const refreshUserController = async (req, res, next) => {
-  const { userId } = req;
-  const { email, subscription } = await refreshUser(userId);
+  const { user } = req;
+  const { email, subscription } = user;
   res.json({ email, subscription });
 };
 
 const patchFavoriteUserController = async (req, res, next) => {
   const { userId, body } = req;
   const { subscription: newSubscription } = body;
-  const { email, subscription } = await patchFavoriteUser(
-    userId,
-    newSubscription
-  );
-  res.json({ email, subscription });
+  const user = await patchFavoriteUser(userId, newSubscription);
+  res.json(user);
 };
 
 module.exports = {

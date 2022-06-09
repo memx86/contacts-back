@@ -12,12 +12,13 @@ const auth = async (req, res, next) => {
     throw new UserError({ type: UserError.TYPE.TOKEN_TYPE });
   try {
     const { userId } = jwt.verify(token, process.env.JWT_KEY);
-    const userToken = await checkUserToken(userId);
+    const user = await checkUserToken(userId);
 
-    if (token !== userToken)
+    if (token !== user.token)
       throw new UserError({ type: UserError.TYPE.UNAUTHORIZED });
 
     req.userId = userId;
+    req.user = user;
     next();
   } catch (error) {
     throw new UserError({ type: UserError.TYPE.UNAUTHORIZED });
