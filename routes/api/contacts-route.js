@@ -8,20 +8,20 @@ const {
   updateStatusContactController,
 } = require("../../controllers/contacts-controller");
 const {
-  addContactBodyValidation,
-  updateContactValidation,
+  contactBodyValidation,
 } = require("../../middlewares/validation-middleware");
 const { errorHandlerWrapper } = require("../../helpers/errorHandler");
-
+const { auth } = require("../../middlewares/authorization");
 const router = express.Router();
 
+router.use(errorHandlerWrapper(auth));
 router.get("/", errorHandlerWrapper(getContactsController));
 
 router.get("/:contactId", errorHandlerWrapper(getContactByIdController));
 
 router.post(
   "/",
-  addContactBodyValidation,
+  contactBodyValidation,
   errorHandlerWrapper(addContactController)
 );
 
@@ -29,7 +29,7 @@ router.delete("/:contactId", errorHandlerWrapper(removeContactController));
 
 router.put(
   "/:contactId",
-  updateContactValidation,
+  contactBodyValidation,
   errorHandlerWrapper(updateContactController)
 );
 
@@ -38,4 +38,6 @@ router.patch(
   errorHandlerWrapper(updateStatusContactController)
 );
 
-module.exports = router;
+module.exports = {
+  contactsRouter: router,
+};

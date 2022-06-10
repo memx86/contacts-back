@@ -1,8 +1,8 @@
-const { ContactError } = require("./errors");
+const { ContactError, UserError } = require("./errors");
 
 const errorHandlerWrapper = (controller) => {
   return (req, res, next) => {
-    controller(req, res).catch(next);
+    controller(req, res, next).catch(next);
   };
 };
 
@@ -16,7 +16,13 @@ const errorHandler = (error, req, res, next) => {
     case ContactError.TYPE.MISSING:
     case ContactError.TYPE.MISSING_FAV:
     case ContactError.TYPE.VALIDATION:
+    case UserError.TYPE.VALIDATION:
       return res.status(400).json({ message });
+    case UserError.TYPE.AUTH:
+    case UserError.TYPE.UNAUTHORIZED:
+      return res.status(401).json({ message });
+    case UserError.TYPE.REGISTRATION:
+      return res.status(409).json({ message });
     default:
       return res.status(500).json({ message });
   }
