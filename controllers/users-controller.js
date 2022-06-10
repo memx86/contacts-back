@@ -33,8 +33,8 @@ const logoutUserController = async (req, res, next) => {
 
 const refreshUserController = async (req, res, next) => {
   const { user } = req;
-  const { email, subscription } = user;
-  res.json({ email, subscription });
+  const { email, subscription, avatarURL } = user;
+  res.json({ email, subscription, avatarURL });
 };
 
 const patchFavoriteUserController = async (req, res, next) => {

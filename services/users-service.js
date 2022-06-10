@@ -52,7 +52,7 @@ const patchFavoriteUser = async (userId, subscription) => {
       { subscription },
       {
         runValidators: true,
-        returnDocument: "after",
+        new: true,
       }
     ).select(includingProjection);
     return user;
@@ -62,8 +62,11 @@ const patchFavoriteUser = async (userId, subscription) => {
 };
 
 const patchAvatar = async (userId, avatarURL) => {
-  await User.findByIdAndUpdate(userId, { avatarURL });
-  const user = await User.findById(userId).select(includingProjection);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { avatarURL },
+    { new: true }
+  );
   return user;
 };
 
