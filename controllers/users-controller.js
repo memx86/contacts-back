@@ -4,7 +4,6 @@ const {
   signupUser,
   loginUser,
   logoutUser,
-  refreshUser,
   patchFavoriteUser,
   patchAvatar,
 } = require("../services/users-service");
@@ -29,13 +28,13 @@ const loginUserController = async (req, res, next) => {
 const logoutUserController = async (req, res, next) => {
   const { userId } = req;
   await logoutUser(userId);
-  res.status(204).json({});
+  res.status(204);
 };
 
 const refreshUserController = async (req, res, next) => {
-  const { userId } = req;
-  const user = await refreshUser(userId);
-  res.json(user);
+  const { user } = req;
+  const { email, subscription } = user;
+  res.json({ email, subscription });
 };
 
 const patchFavoriteUserController = async (req, res, next) => {

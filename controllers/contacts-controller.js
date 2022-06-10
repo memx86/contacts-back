@@ -7,12 +7,6 @@ const {
   updateStatusContact,
 } = require("../services/contacts-service");
 
-// maybe better use this?
-// const contactResponseMaker = ({ _doc }) => {
-//   const { __v, owner, ...contact } = _doc;
-//   return contact;
-// };
-
 const checkNan = (value) => {
   return !isNaN(value) ? value : 0;
 };
@@ -39,40 +33,41 @@ const getContactsController = async (req, res, next) => {
   const totalContacts = contacts.length;
   res.json({ contacts, page, limit, total_results: totalContacts });
 };
+
 const getContactByIdController = async (req, res, next) => {
   const { userId } = req;
   const id = req.params.contactId;
   const contact = await getContactById(userId, id);
-  // maybe better use this?
-  // res.json(contactResponseMaker(contact));
   res.json(contact);
 };
+
 const addContactController = async (req, res, next) => {
   const { body, userId } = req;
   const newContact = await addContact(userId, body);
-  // res.status(201).json(contactResponseMaker(newContact));
   res.status(201).json(newContact);
 };
+
 const removeContactController = async (req, res, next) => {
   const { userId } = req;
   const id = req.params.contactId;
-  const contactId = await removeContact(userId, id);
-  res.json({ message: `contact deleted id#${contactId}` });
+  const contact = await removeContact(userId, id);
+  res.json(contact);
 };
+
 const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { body, userId } = req;
   const newContact = await updateContact(userId, contactId, body);
-  // res.json(contactResponseMaker(newContact));
   res.json(newContact);
 };
+
 const updateStatusContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { body, userId } = req;
   const newContact = await updateStatusContact(userId, contactId, body);
-  // res.json(contactResponseMaker(newContact));
   res.json(newContact);
 };
+
 module.exports = {
   getContactsController,
   getContactByIdController,

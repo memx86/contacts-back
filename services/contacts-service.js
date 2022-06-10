@@ -35,38 +35,27 @@ async function getContactById(userId, contactId) {
   let contact = await Contact.findById(contactId);
   if (!contact || !contact.owner || contact.owner.valueOf() !== userId)
     throw new ContactError({ type: ContactError.TYPE.CONTACT_NOT_FOUND });
-  // is this right implementation?
   contact = await Contact.findById(contactId).select(excludingProjection);
   return contact;
 }
 
 async function addContact(userId, body) {
-  const { name, email, phone } = body;
-  if (!name || !email || !phone)
-    throw new ContactError({
-      type: ContactError.TYPE.MISSING_REQ,
-    });
-  // const contact = await Contact.create({ ...body, owner: userId });
-  // await Contact.findById(contact._id).populate("owner"); ????
-
   const { _id: contactId } = await Contact.create({ ...body, owner: userId });
-  const contact = await getContactById(userId, contactId);
+  const contact = getContactById(userId, contactId);
   return contact;
 }
 
 async function removeContact(userId, contactId) {
-  await getContactById(userId, contactId);
-  const contact = await Contact.findByIdAndDelete(contactId);
-  if (!contact)
-    throw new ContactError({ type: ContactError.TYPE.CONTACT_NOT_FOUND });
-  return contactId;
+  const contact = await getContactById(userId, contactId);
+  await Contact.findByIdAndDelete(contactId);
+  return contact;
 }
 
 async function updateContact(userId, contactId, body) {
   await getContactById(userId, contactId);
-  if (!body) throw new ContactError({ type: ContactError.TYPE.MISSING });
-  await Contact.findByIdAndUpdate(contactId, body);
-  const contact = await getContactById(userId, contactId);
+  const contact = await Contact.findByIdAndUpdate(contactId, body, {
+    returnDocument: "after",
+  }).select(excludingProjection);
   return contact;
 }
 
@@ -74,8 +63,13 @@ async function updateStatusContact(userId, contactId, { favorite }) {
   await getContactById(userId, contactId);
   if (favorite === undefined)
     throw new ContactError({ type: ContactError.TYPE.MISSING_FAV });
-  await Contact.findByIdAndUpdate(contactId, { favorite });
-  const contact = await getContactById(userId, contactId);
+  const contact = await Contact.findByIdAndUpdate(
+    contactId,
+    { favorite },
+    {
+      returnDocument: "after",
+    }
+  ).select(excludingProjection);
   return contact;
 }
 module.exports = {

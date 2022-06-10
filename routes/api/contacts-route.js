@@ -8,7 +8,7 @@ const {
   updateStatusContactController,
 } = require("../../controllers/contacts-controller");
 const {
-  addContactBodyValidation,
+  contactBodyValidation,
 } = require("../../middlewares/validation-middleware");
 const { errorHandlerWrapper } = require("../../helpers/errorHandler");
 const { auth } = require("../../middlewares/authorization");
@@ -21,7 +21,7 @@ router.get("/:contactId", errorHandlerWrapper(getContactByIdController));
 
 router.post(
   "/",
-  addContactBodyValidation,
+  contactBodyValidation,
   errorHandlerWrapper(addContactController)
 );
 
@@ -29,7 +29,7 @@ router.delete("/:contactId", errorHandlerWrapper(removeContactController));
 
 router.put(
   "/:contactId",
-  addContactBodyValidation,
+  contactBodyValidation,
   errorHandlerWrapper(updateContactController)
 );
 
