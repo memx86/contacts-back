@@ -7,6 +7,7 @@ const includingProjection = {
   email: 1,
   subscription: 1,
   avatarURL: 1,
+  token: 1,
   _id: 0,
 };
 
@@ -56,11 +57,11 @@ const loginUser = async ({ email, password }) => {
 };
 
 const checkUserToken = async (userId) => {
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).select(includingProjection);
   if (!user || !user.token) {
     throw new UserError({ type: UserError.TYPE.UNAUTHORIZED });
   }
-  return user.token;
+  return user;
 };
 
 const logoutUser = async (userId) => {
@@ -68,28 +69,28 @@ const logoutUser = async (userId) => {
   return user;
 };
 
-const refreshUser = async (userId) => {
-  const user = User.findById(userId).select(includingProjection);
-  return user;
-};
-
 const patchSubscription = async (userId, subscription) => {
   try {
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       userId,
       { subscription },
-      { runValidators: true }
-    );
+      {
+        runValidators: true,
+        new: true,
+      }
+    ).select(includingProjection);
+    return user;
   } catch ({ message }) {
     throw new UserError({ type: UserError.TYPE.VALIDATION, message });
   }
-  const user = await User.findById(userId).select(includingProjection);
-  return user;
 };
 
 const patchAvatar = async (userId, avatarURL) => {
-  await User.findByIdAndUpdate(userId, { avatarURL });
-  const user = await User.findById(userId).select(includingProjection);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { avatarURL },
+    { new: true }
+  );
   return user;
 };
 
@@ -99,7 +100,6 @@ module.exports = {
   reVerifyUser,
   loginUser,
   logoutUser,
-  refreshUser,
   checkUserToken,
   patchSubscription,
   patchAvatar,

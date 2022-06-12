@@ -19,24 +19,33 @@ const userBodySchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-const addContactBodyValidation = (req, res, next) => {
+const contactBodyValidation = (req, res, next) => {
   const { error } = contactBodySchema.validate(req.body);
   if (error) {
-    const { message } = error;
+    const { message, details } = error;
+    const type = details[0].type;
+    if (type === "any.required") {
+      throw new ContactError({ type: ContactError.TYPE.MISSING_REQ });
+    }
     throw new ContactError({ type: ContactError.TYPE.VALIDATION, message });
   }
   next();
 };
 
-const addUserBodyValidation = (req, res, next) => {
+const userBodyValidation = (req, res, next) => {
   const { error } = userBodySchema.validate(req.body);
   if (error) {
-    const { message } = error;
+    const { message, details } = error;
+    const type = details[0].type;
+    if (type === "any.required") {
+      throw new ContactError({ type: ContactError.TYPE.MISSING_REQ });
+    }
     throw new UserError({ type: UserError.TYPE.VALIDATION, message });
   }
   next();
 };
+
 module.exports = {
-  addContactBodyValidation,
-  addUserBodyValidation,
+  contactBodyValidation,
+  userBodyValidation,
 };

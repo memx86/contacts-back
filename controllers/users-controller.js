@@ -7,7 +7,6 @@ const {
   reVerifyUser,
   loginUser,
   logoutUser,
-  refreshUser,
   patchSubscription,
   patchAvatar,
 } = require("../services/users-service");
@@ -61,13 +60,13 @@ const loginUserController = async (req, res, next) => {
 const logoutUserController = async (req, res, next) => {
   const { userId } = req;
   await logoutUser(userId);
-  res.status(204).json({});
+  res.status(204);
 };
 
 const refreshUserController = async (req, res, next) => {
-  const { userId } = req;
-  const user = await refreshUser(userId);
-  res.json(user);
+  const { user } = req;
+  const { email, subscription, avatarURL } = user;
+  res.json({ email, subscription, avatarURL });
 };
 
 const patchSubscriptionController = async (req, res, next) => {
