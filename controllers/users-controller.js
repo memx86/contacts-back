@@ -1,20 +1,28 @@
+const gravatar = require("gravatar");
+
 const {
   signupUser,
   loginUser,
   logoutUser,
   patchFavoriteUser,
+  patchAvatar,
 } = require("../services/users-service");
+const { handleAvatarFile } = require("../services/avatars-service");
 
 const signupUserController = async (req, res, next) => {
   const { body } = req;
-  const { email, subscription } = await signupUser(body);
-  res.status(201).json({ email, subscription });
+  const avatar = gravatar.url(body.email, {
+    protocol: "https",
+  });
+  body.avatarURL = avatar;
+  const { email, subscription, avatarURL } = await signupUser(body);
+  res.status(201).json({ email, subscription, avatarURL });
 };
 
 const loginUserController = async (req, res, next) => {
   const { body } = req;
-  const { email, subscription, token } = await loginUser(body);
-  res.json({ token, user: { email, subscription } });
+  const { email, subscription, avatarURL, token } = await loginUser(body);
+  res.json({ token, user: { email, subscription, avatarURL } });
 };
 
 const logoutUserController = async (req, res, next) => {
@@ -25,8 +33,8 @@ const logoutUserController = async (req, res, next) => {
 
 const refreshUserController = async (req, res, next) => {
   const { user } = req;
-  const { email, subscription } = user;
-  res.json({ email, subscription });
+  const { email, subscription, avatarURL } = user;
+  res.json({ email, subscription, avatarURL });
 };
 
 const patchFavoriteUserController = async (req, res, next) => {
@@ -36,10 +44,18 @@ const patchFavoriteUserController = async (req, res, next) => {
   res.json(user);
 };
 
+const patchAvatarController = async (req, res, next) => {
+  const { userId, file } = req;
+  const newAvatar = await handleAvatarFile(file);
+  const user = await patchAvatar(userId, newAvatar);
+  res.json(user);
+};
+
 module.exports = {
   signupUserController,
   loginUserController,
   logoutUserController,
   refreshUserController,
   patchFavoriteUserController,
+  patchAvatarController,
 };

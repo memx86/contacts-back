@@ -54,7 +54,7 @@ async function removeContact(userId, contactId) {
 async function updateContact(userId, contactId, body) {
   await getContactById(userId, contactId);
   const contact = await Contact.findByIdAndUpdate(contactId, body, {
-    returnDocument: "after",
+    new: true,
   }).select(excludingProjection);
   return contact;
 }
@@ -67,7 +67,7 @@ async function updateStatusContact(userId, contactId, { favorite }) {
     contactId,
     { favorite },
     {
-      returnDocument: "after",
+      new: true,
     }
   ).select(excludingProjection);
   return contact;

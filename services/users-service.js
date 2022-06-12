@@ -3,7 +3,13 @@ const bcrypt = require("bcrypt");
 const { User } = require("../db/models/usersModel");
 const { UserError } = require("../helpers/errors");
 
-const includingProjection = { email: 1, token: 1, subscription: 1, _id: 0 };
+const includingProjection = {
+  email: 1,
+  subscription: 1,
+  avatarURL: 1,
+  token: 1,
+  _id: 0,
+};
 
 const signupUser = async (body) => {
   const { email } = body;
@@ -35,7 +41,8 @@ const checkUserToken = async (userId) => {
 };
 
 const logoutUser = async (userId) => {
-  await User.findByIdAndUpdate(userId, { token: null });
+  const user = await User.findByIdAndUpdate(userId, { token: null });
+  return user;
 };
 
 const patchFavoriteUser = async (userId, subscription) => {
@@ -45,7 +52,7 @@ const patchFavoriteUser = async (userId, subscription) => {
       { subscription },
       {
         runValidators: true,
-        returnDocument: "after",
+        new: true,
       }
     ).select(includingProjection);
     return user;
@@ -54,10 +61,20 @@ const patchFavoriteUser = async (userId, subscription) => {
   }
 };
 
+const patchAvatar = async (userId, avatarURL) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { avatarURL },
+    { new: true }
+  );
+  return user;
+};
+
 module.exports = {
   signupUser,
   loginUser,
   logoutUser,
   checkUserToken,
   patchFavoriteUser,
+  patchAvatar,
 };
