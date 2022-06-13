@@ -29,7 +29,11 @@ describe("login controller unit test", () => {
       password: "123456",
     };
 
-    const { _id } = await User.create(newUser);
+    const { _id } = await User.create({
+      ...newUser,
+      verificationToken: "mock token",
+      verify: true,
+    });
 
     const response = await request(app).post("/api/users/login").send(newUser);
     const { body } = response;
@@ -217,7 +221,11 @@ describe("login controller unit test", () => {
       email: "test@mail.com",
       password: "123456",
     };
-    await User.create(newUser);
+    await User.create({
+      ...newUser,
+      verificationToken: "mock token",
+      verify: true,
+    });
 
     const wrongUser = {
       ...newUser,
@@ -230,5 +238,22 @@ describe("login controller unit test", () => {
 
     expect(response.statusCode).toBe(401);
     expect(body.message).toBe("Email or password is wrong");
+  });
+
+  it("unverified user, status 400, Please verify your email", async () => {
+    const newUser = {
+      email: "test@mail.com",
+      password: "123456",
+    };
+    await User.create({
+      ...newUser,
+      verificationToken: "mock token",
+    });
+
+    const response = await request(app).post("/api/users/login").send(newUser);
+    const { body } = response;
+
+    expect(response.statusCode).toBe(400);
+    expect(body.message).toBe("Please verify your email");
   });
 });

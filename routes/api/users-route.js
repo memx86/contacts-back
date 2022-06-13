@@ -7,8 +7,10 @@ const {
   loginUserController,
   logoutUserController,
   refreshUserController,
-  patchFavoriteUserController,
+  patchSubscriptionController,
   patchAvatarController,
+  verifyUserController,
+  reVerifyUserController,
 } = require("../../controllers/users-controller");
 const { auth } = require("../../middlewares/authorization");
 const {
@@ -27,13 +29,20 @@ router.post(
   errorHandlerWrapper(loginUserController)
 );
 
+router.get(
+  "/verify/:verificationToken",
+  errorHandlerWrapper(verifyUserController)
+);
+
+router.post("/verify", errorHandlerWrapper(reVerifyUserController));
+
 router.use(errorHandlerWrapper(auth));
 
 router.get("/logout", errorHandlerWrapper(logoutUserController));
 
 router.get("/current", errorHandlerWrapper(refreshUserController));
 
-router.patch("/", errorHandlerWrapper(patchFavoriteUserController));
+router.patch("/", errorHandlerWrapper(patchSubscriptionController));
 
 router.patch(
   "/avatars",

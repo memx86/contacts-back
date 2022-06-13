@@ -19,9 +19,33 @@ const signupUser = async (body) => {
   return newUser;
 };
 
+const verifyCheck = async (user) => {
+  if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
+  if (user.verify) throw new UserError({ type: UserError.TYPE.VERIFICATION });
+};
+
+const verifyUser = async (verificationToken) => {
+  const user = await User.findOne({ verificationToken });
+  await verifyCheck(user);
+  user.verificationToken = "none";
+  user.verify = true;
+  await user.save();
+  return { message: "Verification successful" };
+};
+
+const reVerifyUser = async (email, verificationToken) => {
+  const user = await User.findOne({ email });
+  if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
+  user.verificationToken = verificationToken;
+  user.verify = false;
+  await user.save();
+  return user;
+};
+
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) throw new UserError({ type: UserError.TYPE.AUTH });
+  if (!user.verify) throw new UserError({ type: UserError.TYPE.NOT_VERIFIED });
   const isAuth = await bcrypt.compare(password, user.password);
   if (!isAuth) throw new UserError({ type: UserError.TYPE.AUTH });
 
@@ -45,7 +69,7 @@ const logoutUser = async (userId) => {
   return user;
 };
 
-const patchFavoriteUser = async (userId, subscription) => {
+const patchSubscription = async (userId, subscription) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
@@ -72,9 +96,11 @@ const patchAvatar = async (userId, avatarURL) => {
 
 module.exports = {
   signupUser,
+  verifyUser,
+  reVerifyUser,
   loginUser,
   logoutUser,
   checkUserToken,
-  patchFavoriteUser,
+  patchSubscription,
   patchAvatar,
 };

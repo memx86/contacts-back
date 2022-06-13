@@ -41,7 +41,7 @@ async function getContactById(userId, contactId) {
 
 async function addContact(userId, body) {
   const { _id: contactId } = await Contact.create({ ...body, owner: userId });
-  const contact = getContactById(userId, contactId);
+  const contact = await getContactById(userId, contactId);
   return contact;
 }
 

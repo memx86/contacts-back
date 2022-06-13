@@ -24,6 +24,10 @@ UserError.TYPE = {
   AUTH: "Email or password is wrong",
   UNAUTHORIZED: "Not authorized",
   TOKEN_TYPE: "Wrong token type",
+  NOT_FOUND: "User not found",
+  EMAIL_ERROR: "Can't send email",
+  NOT_VERIFIED: "Please verify your email",
+  VERIFICATION: "Verification has already been passed",
 };
 
 class MulterError extends Error {
