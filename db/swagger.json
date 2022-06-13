@@ -563,7 +563,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewUpdatedContact"
+                "$ref": "#/components/schemas/NewContact"
               }
             }
           },
@@ -676,29 +676,6 @@
       "NewContact": {
         "type": "object",
         "required": ["name", "email", "phone"],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "john.doe@mail.com"
-          },
-          "phone": {
-            "type": "string",
-            "format": "phone",
-            "example": "+38(050)111-11-11"
-          },
-          "favorite": {
-            "type": "boolean",
-            "example": false
-          }
-        }
-      },
-      "NewUpdatedContact": {
-        "type": "object",
         "properties": {
           "name": {
             "type": "string",

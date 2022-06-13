@@ -29,7 +29,6 @@ const getContactsController = async (req, res, next) => {
   page = validatePage(page);
   limit = validateLimit(limit);
   const skip = (page - 1) * limit;
-  // only favorite or not favorite in this implementation
   const contacts = await getContacts({ userId, skip, limit, favorite });
   const totalContacts = contacts.length;
   res.json({ contacts, page, limit, total_results: totalContacts });
