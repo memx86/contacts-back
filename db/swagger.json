@@ -1,22 +1,22 @@
 {
   "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "https://memx86-contacts.herokuapp.com/api"
+    }
+  ],
   "info": {
-    "title": "Contacts API",
     "description": "Contacts API developed by memx86",
+    "version": "1.0.2",
+    "title": "Contacts API",
     "contact": {
       "email": "memx86@gmail.com"
     },
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "1.0.2"
-  },
-  "servers": [
-    {
-      "url": "https://memx86-contacts.herokuapp.com/api"
     }
-  ],
+  },
   "tags": [
     {
       "name": "users",
@@ -30,22 +30,10 @@
   "paths": {
     "/users/signup": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "create user",
-        "description": "Create new user\n",
         "operationId": "createUser",
-        "requestBody": {
-          "description": "User to create",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewUser"
-              }
-            }
-          }
-        },
+        "description": "Create new user\n",
         "responses": {
           "201": {
             "description": "User created",
@@ -58,42 +46,49 @@
             }
           },
           "400": {
-            "description": "Validation error"
+            "$ref": "#/components/responses/ValidationError"
           },
           "409": {
-            "description": "Email in use"
+            "$ref": "#/components/responses/RegistrationError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          },
+          "description": "User to create"
         }
       }
     },
     "/users/login": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "log in",
-        "description": "Log in user\n",
         "operationId": "loginUser",
-        "requestBody": {
-          "description": "user object",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LogIn"
-              }
-            }
-          }
-        },
+        "description": "Log in user\n",
         "responses": {
           "200": {
             "description": "User logged in",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "JWT token"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -102,27 +97,33 @@
             "description": "Validation error | Email or password is wrong | Please verify your email"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogIn"
+              }
+            }
+          },
+          "description": "user object"
         }
       }
     },
     "/users/verify/{verificationToken}": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "verify user",
-        "description": "Provide verification token to get activation link via email\n",
         "operationId": "verifyUser",
+        "description": "Provide verification token to get activation link via email\n",
         "parameters": [
           {
-            "name": "verificationToken",
             "in": "path",
+            "name": "verificationToken",
             "description": "user's verification token",
             "required": true,
-            "style": "simple",
-            "explode": false,
             "schema": {
               "type": "string"
             }
@@ -133,85 +134,84 @@
             "description": "Verification successful"
           },
           "400": {
-            "description": "Verification has already been passed"
+            "$ref": "#/components/responses/VerificationError"
           },
           "404": {
-            "description": "User not found"
+            "$ref": "#/components/responses/UserNotFoundError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
     },
     "/users/verify": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "reverify user",
-        "description": "Provide  email to resend verification link\n",
         "operationId": "reVerifyUser",
+        "description": "Provide  email to resend verification link\n",
+        "responses": {
+          "200": {
+            "description": "Verification email sent"
+          },
+          "404": {
+            "$ref": "#/components/responses/UserNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
         "requestBody": {
-          "description": "user's email to reverify",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Verify"
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification email sent"
           },
-          "404": {
-            "description": "User not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "description": "user's email to reverify"
         }
       }
     },
     "/users/logout": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "log user out",
-        "description": "Logout user\n",
         "operationId": "logoutUser",
+        "description": "Logout user\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "204": {
             "description": "successfull logout"
           },
           "400": {
-            "description": "Wrong token type"
+            "$ref": "#/components/responses/TokenTypeError"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       }
     },
     "/users/current": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "current user info",
-        "description": "Get current user information\n",
         "operationId": "currentUser",
+        "description": "Get current user information\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "current user",
@@ -224,40 +224,28 @@
             }
           },
           "400": {
-            "description": "Wrong token type"
+            "$ref": "#/components/responses/TokenTypeError"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       }
     },
     "/users/": {
       "patch": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "change user's subscription",
-        "description": "Change user's subscription field\n",
         "operationId": "changeUserSubscription",
-        "requestBody": {
-          "description": "Updated subscription field",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Subscription"
-              }
-            }
+        "description": "Change user's subscription field\n",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "update successfull",
@@ -273,37 +261,35 @@
             "description": "Wrong token type | Validation error"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Subscription"
+              }
+            }
+          },
+          "description": "Updated subscription field"
+        }
       }
     },
     "/users/avatars": {
       "patch": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "upload an avatar",
-        "description": "Change user's avatar\n",
         "operationId": "changeUserAvatar",
-        "requestBody": {
-          "content": {
-            "image/*": {
-              "schema": {
-                "type": "string",
-                "format": "binar"
-              }
-            }
+        "description": "Change user's avatar\n",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "update successfull",
@@ -319,60 +305,59 @@
             "description": "Wrong token type | no file | not image"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
+        "requestBody": {
+          "content": {
+            "image/*": {
+              "schema": {
+                "type": "string",
+                "format": "binar"
+              }
+            }
           }
-        ]
+        }
       }
     },
     "/contacts": {
       "get": {
-        "tags": [
-          "contacts"
-        ],
+        "tags": ["contacts"],
         "summary": "get all user's contacts",
-        "description": "Get all user's contacts\n",
         "operationId": "getContacts",
+        "description": "Get all user's contacts\n",
         "parameters": [
           {
+            "in": "query",
             "name": "page",
-            "in": "query",
-            "description": "Page number, default: 1",
-            "required": false,
-            "style": "form",
-            "explode": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "Page number, default: 1"
           },
           {
+            "in": "query",
             "name": "limit",
-            "in": "query",
-            "description": "Per page value form 20 to 50, default: 20",
-            "required": false,
-            "style": "form",
-            "explode": true,
             "schema": {
               "type": "integer"
-            }
+            },
+            "description": "Per page value form 20 to 50, default: 20"
           },
           {
-            "name": "favorite",
             "in": "query",
-            "description": "get favorite/not favorite contacts",
-            "required": false,
-            "style": "form",
-            "explode": true,
+            "name": "favorite",
             "schema": {
               "type": "boolean"
-            }
+            },
+            "description": "get favorite/not favorite contacts"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -387,41 +372,29 @@
             }
           },
           "400": {
-            "description": "Wrong token type"
+            "$ref": "#/components/responses/TokenTypeError"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Not found"
+            "$ref": "#/components/responses/NotFoundError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
-        },
+        }
+      },
+      "post": {
+        "tags": ["contacts"],
+        "summary": "adds contact",
+        "operationId": "addContact",
+        "description": "Creates new contact",
         "security": [
           {
             "bearerAuth": []
           }
-        ]
-      },
-      "post": {
-        "tags": [
-          "contacts"
         ],
-        "summary": "adds contact",
-        "description": "Creates new contact",
-        "operationId": "addContact",
-        "requestBody": {
-          "description": "Contact to add",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewContact"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": "contact created",
@@ -437,38 +410,44 @@
             "description": "Wrong token type | Missing required fields | Validation error"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewContact"
+              }
+            }
+          },
+          "description": "Contact to add"
+        }
       }
     },
     "/contacts/{contactId}": {
       "get": {
-        "tags": [
-          "contacts"
-        ],
+        "tags": ["contacts"],
         "summary": "get contact by id",
-        "description": "Get user's contact by id\n",
         "operationId": "getContactById",
+        "description": "Get user's contact by id\n",
         "parameters": [
           {
-            "name": "contactId",
             "in": "path",
+            "name": "contactId",
             "description": "contact's id",
             "required": true,
-            "style": "simple",
-            "explode": false,
             "schema": {
               "type": "string"
             }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -483,54 +462,79 @@
             }
           },
           "400": {
-            "description": "Wrong token type"
+            "$ref": "#/components/responses/TokenTypeError"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Contact not found"
+            "$ref": "#/components/responses/ContactNotFoundError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       },
-      "put": {
-        "tags": [
-          "contacts"
-        ],
-        "summary": "update contact by id",
-        "description": "Updates a contact by id",
-        "operationId": "updateContact",
+      "delete": {
+        "tags": ["contacts"],
+        "summary": "delete contact by id",
+        "operationId": "deleteContact",
+        "description": "Deletes a contact by id",
         "parameters": [
           {
-            "name": "contactId",
             "in": "path",
+            "name": "contactId",
             "description": "contact's id",
             "required": true,
-            "style": "simple",
-            "explode": false,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "description": "Updated contact",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewUpdatedContact"
-              }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "contact deleted id# {contactId}"
+          },
+          "400": {
+            "$ref": "#/components/responses/TokenTypeError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ContactNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["contacts"],
+        "summary": "update contact by id",
+        "operationId": "updateContact",
+        "description": "Updates a contact by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contactId",
+            "description": "contact's id",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "contact updated",
@@ -546,96 +550,49 @@
             "description": "Wrong token type | Missing fields | Validation error"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Contact not found"
+            "$ref": "#/components/responses/ContactNotFoundError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "contacts"
-        ],
-        "summary": "delete contact by id",
-        "description": "Deletes a contact by id",
-        "operationId": "deleteContact",
-        "parameters": [
-          {
-            "name": "contactId",
-            "in": "path",
-            "description": "contact's id",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUpdatedContact"
+              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "contact deleted id# {contactId}"
           },
-          "400": {
-            "description": "Wrong token type"
-          },
-          "401": {
-            "description": "Not authorized"
-          },
-          "404": {
-            "description": "Contact not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+          "description": "Updated contact"
+        }
       }
     },
     "/contacts/{contactId}/favorite": {
       "patch": {
-        "tags": [
-          "contacts"
-        ],
+        "tags": ["contacts"],
         "summary": "update favorite field",
-        "description": "Updates contact's favorite field by id",
         "operationId": "updateFavorite",
+        "description": "Updates contact's favorite field by id",
         "parameters": [
           {
-            "name": "contactId",
             "in": "path",
+            "name": "contactId",
             "description": "contact's id",
             "required": true,
-            "style": "simple",
-            "explode": false,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "description": "Updated contact's favorite field",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Favorite"
-              }
-            }
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "contact's favorite field updated",
@@ -651,31 +608,33 @@
             "description": "Wrong token type | Missing required field favorite | Validation error"
           },
           "401": {
-            "description": "Not authorized"
+            "$ref": "#/components/responses/UnauthorizedError"
           },
           "404": {
-            "description": "Contact not found"
+            "$ref": "#/components/responses/ContactNotFoundError"
           },
           "500": {
-            "description": "Server error"
+            "$ref": "#/components/responses/ServerError"
           }
         },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Favorite"
+              }
+            }
+          },
+          "description": "Updated contact's favorite field"
+        }
       }
     }
   },
   "components": {
     "schemas": {
       "NewUser": {
-        "required": [
-          "email",
-          "password"
-        ],
         "type": "object",
+        "required": ["email", "password"],
         "properties": {
           "email": {
             "type": "string",
@@ -715,12 +674,8 @@
         }
       },
       "NewContact": {
-        "required": [
-          "email",
-          "name",
-          "phone"
-        ],
         "type": "object",
+        "required": ["name", "email", "phone"],
         "properties": {
           "name": {
             "type": "string",
@@ -813,11 +768,8 @@
         }
       },
       "LogIn": {
-        "required": [
-          "email",
-          "password"
-        ],
         "type": "object",
+        "required": ["email", "password"],
         "properties": {
           "email": {
             "type": "string",
@@ -831,10 +783,8 @@
         }
       },
       "Verify": {
-        "required": [
-          "email"
-        ],
         "type": "object",
+        "required": ["email"],
         "properties": {
           "email": {
             "type": "string",
@@ -844,10 +794,8 @@
         }
       },
       "Subscription": {
-        "required": [
-          "subscription"
-        ],
         "type": "object",
+        "required": ["subscription"],
         "properties": {
           "subscription": {
             "type": "string",
@@ -856,28 +804,21 @@
         }
       },
       "Favorite": {
-        "required": [
-          "favorite"
-        ],
         "type": "object",
+        "required": ["favorite"],
         "properties": {
           "favorite": {
             "type": "boolean",
             "example": true
           }
         }
-      },
-      "inline_response_200": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "JWT token"
-          },
-          "user": {
-            "$ref": "#/components/schemas/User"
-          }
-        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "responses": {
@@ -925,13 +866,6 @@
       },
       "ServerError": {
         "description": "Server error"
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
       }
     }
   }
