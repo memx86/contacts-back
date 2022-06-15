@@ -13,9 +13,7 @@ const {
   reVerifyUserController,
 } = require("../../controllers/users-controller");
 const { auth } = require("../../middlewares/authorization");
-const {
-  userBodyValidation,
-} = require("../../middlewares/validation-middleware");
+const { userBodyValidation } = require("../../middlewares/validation");
 const { upload } = require("../../middlewares/multer-middleware");
 router.post(
   "/signup",

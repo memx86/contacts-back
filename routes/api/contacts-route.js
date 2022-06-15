@@ -9,7 +9,8 @@ const {
 } = require("../../controllers/contacts-controller");
 const {
   contactBodyValidation,
-} = require("../../middlewares/validation-middleware");
+  favoriteValidation,
+} = require("../../middlewares/validation");
 const { errorHandlerWrapper } = require("../../helpers/errorHandler");
 const { auth } = require("../../middlewares/authorization");
 const router = express.Router();
@@ -35,6 +36,7 @@ router.put(
 
 router.patch(
   "/:contactId/favorite",
+  favoriteValidation,
   errorHandlerWrapper(updateStatusContactController)
 );
 

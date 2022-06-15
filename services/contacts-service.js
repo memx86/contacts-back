@@ -61,8 +61,6 @@ async function updateContact(userId, contactId, body) {
 
 async function updateStatusContact(userId, contactId, { favorite }) {
   await getContactById(userId, contactId);
-  if (favorite === undefined)
-    throw new ContactError({ type: ContactError.TYPE.MISSING_FAV });
   const contact = await Contact.findByIdAndUpdate(
     contactId,
     { favorite },

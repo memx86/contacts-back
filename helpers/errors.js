@@ -20,6 +20,7 @@ class UserError extends Error {
 }
 UserError.TYPE = {
   VALIDATION: "Validation error",
+  MISSING_REQ: "Missing required fields",
   REGISTRATION: "Email in use",
   AUTH: "Email or password is wrong",
   UNAUTHORIZED: "Not authorized",
