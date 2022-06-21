@@ -1,5 +1,6 @@
 const {
   ContactError,
+  IdError,
   UserError,
   MulterError,
   ImageError,
@@ -28,6 +29,7 @@ const errorHandler = (error, req, res, next) => {
     case UserError.TYPE.TOKEN_TYPE:
     case UserError.TYPE.VERIFICATION:
     case UserError.TYPE.NOT_VERIFIED:
+    case IdError.TYPE.WRONG_ID:
       return res.status(400).json({ message });
     case UserError.TYPE.AUTH:
     case UserError.TYPE.UNAUTHORIZED:

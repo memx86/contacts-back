@@ -12,6 +12,17 @@ ContactError.TYPE = {
   MISSING_FAV: "Missing required field favorite",
   VALIDATION: "Validation error",
 };
+
+class IdError extends Error {
+  constructor({ type, message }) {
+    super(message ?? type);
+    this.type = type;
+  }
+}
+IdError.TYPE = {
+  WRONG_ID: "Not id",
+};
+
 class UserError extends Error {
   constructor({ type, message }) {
     super(message ?? type);
@@ -53,6 +64,7 @@ ImageError.TYPE = {
 
 module.exports = {
   ContactError,
+  IdError,
   UserError,
   MulterError,
   ImageError,
