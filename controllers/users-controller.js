@@ -44,8 +44,7 @@ const verifyUserController = async (req, res, next) => {
 
 const reVerifyUserController = async (req, res, next) => {
   const { email } = req.body;
-  const token = nanoid();
-  const { verificationToken } = await reVerifyUser(email, token);
+  const { verificationToken } = await reVerifyUser(email);
   const link = getVerificationUrl(verificationToken);
   await sendVerificationEmail(email, link);
   res.json({ message: "Verification email sent" });

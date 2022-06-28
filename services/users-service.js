@@ -19,26 +19,23 @@ const signupUser = async (body) => {
   return newUser;
 };
 
-const verifyCheck = async (user) => {
+const verifyCheck = (user) => {
   if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
   if (user.verify) throw new UserError({ type: UserError.TYPE.VERIFICATION });
 };
 
 const verifyUser = async (verificationToken) => {
   const user = await User.findOne({ verificationToken });
-  await verifyCheck(user);
+  verifyCheck(user);
   user.verificationToken = "none";
   user.verify = true;
   await user.save();
   return { message: "Verification successful" };
 };
 
-const reVerifyUser = async (email, verificationToken) => {
+const reVerifyUser = async (email) => {
   const user = await User.findOne({ email });
-  if (!user) throw new UserError({ type: UserError.TYPE.NOT_FOUND });
-  user.verificationToken = verificationToken;
-  user.verify = false;
-  await user.save();
+  verifyCheck(user);
   return user;
 };
 
