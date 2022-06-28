@@ -13,7 +13,10 @@ const {
   reVerifyUserController,
 } = require("../../controllers/users-controller");
 const { auth } = require("../../middlewares/authorization");
-const { userBodyValidation } = require("../../middlewares/validation");
+const {
+  userBodyValidation,
+  emailVerifyValidation,
+} = require("../../middlewares/validation");
 const { upload } = require("../../middlewares/multer-middleware");
 router.post(
   "/signup",
@@ -32,7 +35,11 @@ router.get(
   errorHandlerWrapper(verifyUserController)
 );
 
-router.post("/verify", errorHandlerWrapper(reVerifyUserController));
+router.post(
+  "/verify",
+  emailVerifyValidation,
+  errorHandlerWrapper(reVerifyUserController)
+);
 
 router.use(errorHandlerWrapper(auth));
 
